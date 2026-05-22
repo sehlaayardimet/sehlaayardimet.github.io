@@ -36,6 +36,7 @@ const i18n = {
 
     contactTitle: "Əlaqə",
     waBtn: "WhatsApp ilə əlaqə",
+    ctaDonate: "Kartlara bax",
 
     footer: "Şəhla Ağayeva · 2026"
   },
@@ -72,6 +73,7 @@ const i18n = {
 
     contactTitle: "İletişim",
     waBtn: "WhatsApp ile iletişim",
+    ctaDonate: "Kartlara bak",
 
     footer: "Şəhla Ağayeva · 2026"
   },
@@ -108,6 +110,7 @@ const i18n = {
 
     contactTitle: "Связаться",
     waBtn: "Написать в WhatsApp",
+    ctaDonate: "К реквизитам",
 
     footer: "Шахла Агаева · 2026"
   },
@@ -144,6 +147,7 @@ const i18n = {
 
     contactTitle: "Get in touch",
     waBtn: "Message on WhatsApp",
+    ctaDonate: "View bank cards",
 
     footer: "Şəhla Ağayeva · 2026"
   }
@@ -390,6 +394,55 @@ function setupLightbox() {
 }
 
 /* -----------------------------------------------------------
+   Sticky donate CTA
+   Visible from the Story section onward, hidden in hero and
+   hidden again once Donation/Footer come into view.
+   ----------------------------------------------------------- */
+
+function setupDonateCta() {
+  const cta = document.querySelector(".cta-donate");
+  const story = document.querySelector(".story");
+  const donation = document.querySelector(".donation");
+  const footer = document.querySelector(".footer");
+  if (!cta || !story || !donation) return;
+
+  let pastStoryStart = false;
+  let donationInView = false;
+  let footerInView = false;
+
+  function update() {
+    const show = pastStoryStart && !donationInView && !footerInView;
+    cta.classList.toggle("visible", show);
+  }
+
+  // Primary observer — on the Story section. CTA appears when the story
+  // intersects the viewport or has already been scrolled past.
+  const storyObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      pastStoryStart = entry.isIntersecting || entry.boundingClientRect.top < 0;
+      update();
+    });
+  }, { threshold: 0 });
+  storyObserver.observe(story);
+
+  // Secondary observer — hide when Donation or Footer is in view.
+  const hideObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.target === donation) donationInView = entry.isIntersecting;
+      else if (entry.target === footer) footerInView = entry.isIntersecting;
+    });
+    update();
+  }, { threshold: 0.1 });
+  hideObserver.observe(donation);
+  if (footer) hideObserver.observe(footer);
+
+  // Smooth scroll to donation on tap.
+  cta.addEventListener("click", () => {
+    donation.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+}
+
+/* -----------------------------------------------------------
    Init
    ----------------------------------------------------------- */
 
@@ -402,4 +455,5 @@ document.addEventListener("DOMContentLoaded", () => {
 
   setupCopyButtons();
   setupLightbox();
+  setupDonateCta();
 });
