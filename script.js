@@ -26,6 +26,9 @@ const i18n = {
 
     photosTitle: "Şəkillər",
 
+    docsTitle: "Sənədlər",
+    docsNote: "Diaqnoz və xəstəxana sənədlərinin nüsxələri. Şəkilə klikləyərək böyütmək olar.",
+
     donationTitle: "Dəstək üçün",
     copy: "Kopyala",
     copied: "Kopyalandı",
@@ -58,6 +61,9 @@ const i18n = {
     stepDateOngoing: "Devam ediyor",
 
     photosTitle: "Fotoğraflar",
+
+    docsTitle: "Belgeler",
+    docsNote: "Tanı ve hastane belgelerinin nüshaları. Görmek için fotoğrafa tıklayın.",
 
     donationTitle: "Destek için",
     copy: "Kopyala",
@@ -92,6 +98,9 @@ const i18n = {
 
     photosTitle: "Фотографии",
 
+    docsTitle: "Документы",
+    docsNote: "Копии диагностических и медицинских документов. Нажмите на фото, чтобы увеличить.",
+
     donationTitle: "Для поддержки",
     copy: "Копировать",
     copied: "Скопировано",
@@ -124,6 +133,9 @@ const i18n = {
     stepDateOngoing: "Ongoing",
 
     photosTitle: "Photos",
+
+    docsTitle: "Documents",
+    docsNote: "Copies of the diagnosis and hospital records. Tap an image to enlarge.",
 
     donationTitle: "How to support",
     copy: "Copy",
