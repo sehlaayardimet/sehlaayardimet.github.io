@@ -85,12 +85,20 @@ a { color: var(--green-mid); }
 .topbar-brand {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  color: var(--green);
+  gap: 9px;
 }
 
 .topbar-brand svg {
   display: block;
+  flex-shrink: 0;
+}
+
+.brand-text {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 500;
+  color: #173404;
+  line-height: 1;
 }
 
 .lang-switcher {
