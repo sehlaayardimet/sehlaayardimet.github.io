@@ -251,6 +251,145 @@ async function copyToClipboard(text) {
 }
 
 /* -----------------------------------------------------------
+   Lightbox — photos + documents
+   Back button closes the lightbox first, not the whole site.
+   ----------------------------------------------------------- */
+
+function setupLightbox() {
+  // Inject minimal styles so no style.css change is needed.
+  const styleEl = document.createElement("style");
+  styleEl.textContent = `
+    body.lightbox-open { overflow: hidden; }
+    .gallery-item img, .doc-item img { cursor: zoom-in; }
+    .lightbox-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0, 0, 0, 0.92);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      cursor: zoom-out;
+      opacity: 0;
+      transition: opacity 0.18s ease-out;
+    }
+    .lightbox-overlay.open { opacity: 1; }
+    .lightbox-overlay img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+      border-radius: 6px;
+      cursor: default;
+    }
+    .lightbox-close {
+      position: absolute;
+      top: 16px; right: 16px;
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.14);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      font-size: 24px;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      font-family: inherit;
+    }
+    .lightbox-close:hover { background: rgba(255, 255, 255, 0.24); }
+  `;
+  document.head.appendChild(styleEl);
+
+  let overlay = null;
+  let isOpen = false;
+
+  function openLightbox(src, alt) {
+    if (isOpen) return;
+    isOpen = true;
+
+    overlay = document.createElement("div");
+    overlay.className = "lightbox-overlay";
+    overlay.setAttribute("role", "dialog");
+    overlay.setAttribute("aria-modal", "true");
+
+    const img = document.createElement("img");
+    img.src = src;
+    img.alt = alt || "";
+
+    const closeBtn = document.createElement("button");
+    closeBtn.className = "lightbox-close";
+    closeBtn.type = "button";
+    closeBtn.setAttribute("aria-label", "Close");
+    closeBtn.innerHTML = "&times;";
+
+    overlay.appendChild(img);
+    overlay.appendChild(closeBtn);
+    document.body.appendChild(overlay);
+    document.body.classList.add("lightbox-open");
+
+    // Trigger fade-in on next frame.
+    requestAnimationFrame(() => overlay && overlay.classList.add("open"));
+
+    closeBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      closeLightbox(true);
+    });
+    overlay.addEventListener("click", (e) => {
+      if (e.target === overlay) closeLightbox(true);
+    });
+
+    // Push exactly one history entry per open. The popstate listener
+    // closes the lightbox when that entry is popped (Back button).
+    try { history.pushState({ lightbox: true }, ""); } catch (e) {}
+  }
+
+  function closeLightbox(consumeHistory) {
+    if (!isOpen) return;
+    isOpen = false;
+
+    if (overlay && overlay.parentNode) {
+      overlay.parentNode.removeChild(overlay);
+    }
+    overlay = null;
+    document.body.classList.remove("lightbox-open");
+
+    // If we still own the pushed entry, walk back so history stays clean.
+    // (When close was triggered BY popstate, we must NOT call history.back again.)
+    if (consumeHistory) {
+      try {
+        if (history.state && history.state.lightbox) {
+          history.back();
+        }
+      } catch (e) {}
+    }
+  }
+
+  // Click delegation — works for both .gallery-item img (photos)
+  // and .doc-item img (documents). On <a> wrappers we prevent the
+  // default new-tab navigation that was causing the original mobile bug.
+  document.querySelectorAll(".gallery-item img, .doc-item img").forEach(img => {
+    img.addEventListener("click", (e) => {
+      const link = img.closest("a");
+      if (link) e.preventDefault();
+      openLightbox(img.currentSrc || img.src, img.alt);
+    });
+  });
+
+  // Back button / back gesture.
+  window.addEventListener("popstate", () => {
+    if (isOpen) closeLightbox(false);
+  });
+
+  // Escape closes on desktop.
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && isOpen) closeLightbox(true);
+  });
+}
+
+/* -----------------------------------------------------------
    Init
    ----------------------------------------------------------- */
 
@@ -262,4 +401,5 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   setupCopyButtons();
+  setupLightbox();
 });
