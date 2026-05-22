@@ -186,12 +186,13 @@ function applyLang(lang) {
 }
 
 function detectInitialLang() {
+  // AZ is always the default. Browser language is intentionally NOT auto-detected
+  // (most Azerbaijani users have a TR or RU browser locale, which would mislead).
+  // Only respect an explicit user choice that was saved in localStorage.
   try {
     const saved = localStorage.getItem("lang");
     if (saved && SUPPORTED.includes(saved)) return saved;
   } catch (e) {}
-  const nav = (navigator.language || "az").slice(0, 2).toLowerCase();
-  if (SUPPORTED.includes(nav)) return nav;
   return DEFAULT_LANG;
 }
 
