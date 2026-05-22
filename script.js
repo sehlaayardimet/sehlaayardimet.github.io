@@ -436,9 +436,9 @@ function setupDonateCta() {
   hideObserver.observe(donation);
   if (footer) hideObserver.observe(footer);
 
-  // Smooth scroll to donation on tap.
+  // Smooth scroll to donation on tap — center it vertically in the viewport.
   cta.addEventListener("click", () => {
-    donation.scrollIntoView({ behavior: "smooth", block: "start" });
+    donation.scrollIntoView({ behavior: "smooth", block: "center" });
   });
 }
 
