@@ -73,12 +73,24 @@ a { color: var(--green-mid); }
   top: 0;
   z-index: 50;
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: space-between;
   padding: 10px 16px;
   background: rgba(250, 252, 247, 0.88);
   backdrop-filter: saturate(140%) blur(10px);
   -webkit-backdrop-filter: saturate(140%) blur(10px);
   border-bottom: 1px solid var(--border);
+}
+
+.topbar-brand {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--green);
+}
+
+.topbar-brand svg {
+  display: block;
 }
 
 .lang-switcher {
